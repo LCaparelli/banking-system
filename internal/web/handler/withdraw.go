@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"banking-system/internal/web/request"
-	"banking-system/internal/web/response"
 	"encoding/json"
 	"fmt"
+	"github.com/LCaparelli/banking-system/internal/web/request"
+	"github.com/LCaparelli/banking-system/internal/web/response"
 	"log"
 	"net/http"
 )

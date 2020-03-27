@@ -1,8 +1,8 @@
 package main
 
 import (
-	"banking-system/internal/web/handler"
 	"fmt"
+	"github.com/LCaparelli/banking-system/internal/web/handler"
 	"io/ioutil"
 	"log"
 	"net/http"

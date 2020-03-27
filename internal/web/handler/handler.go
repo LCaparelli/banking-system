@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"banking-system/internal/web/request"
 	"encoding/json"
 	"fmt"
+	"github.com/LCaparelli/banking-system/internal/web/request"
 	"log"
 	"net/http"
 )

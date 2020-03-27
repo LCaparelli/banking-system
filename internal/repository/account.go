@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"banking-system/internal/domain/account"
 	"fmt"
+	"github.com/LCaparelli/banking-system/internal/domain/account"
 )
 
 const (

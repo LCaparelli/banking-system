@@ -1,9 +1,9 @@
 package service
 
 import (
-	"banking-system/internal/domain/account"
-	"banking-system/internal/repository"
 	"fmt"
+	"github.com/LCaparelli/banking-system/internal/domain/account"
+	"github.com/LCaparelli/banking-system/internal/repository"
 )
 
 var currentId int
