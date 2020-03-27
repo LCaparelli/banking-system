@@ -60,11 +60,6 @@ func accountGET(w http.ResponseWriter, body []byte) {
 		log.Printf("accountGET: Marshal: %v", err)
 		return
 	}
-
-	_, err = w.Write([]byte(respBody))
-	if err != nil {
-		log.Printf("accountGET: Write: %v", err)
-	}
 }
 
 func accountDELETE(w http.ResponseWriter, body []byte) {
@@ -111,6 +106,8 @@ func accountPOST(w http.ResponseWriter, body []byte) {
 		log.Printf("accountDELETE: Marshal: %v", err)
 		return
 	}
+
+	w.Header().Set("Content-Type", "application/json")
 	_, err = w.Write([]byte(respBody))
 	if err != nil {
 		log.Printf("accountDELETE: Write: %v", err)
