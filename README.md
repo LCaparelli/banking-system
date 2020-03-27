@@ -25,7 +25,7 @@ The server REST API ran by `cmd/server/main.go` has the following endpoints:
   - /deposit
   - /withdraw
 
-Alternatively you may also use the account service library for Go present in `pkg/account.go`. For more details about it refer to [its API definition](#library-api-definition).
+Alternatively you may also use the account service library for Go present in `pkg/account/`. For more details about it refer to [its API definition](#library-api-definition).
 
 ###  /account
 All requests to this endpoint must be performed with the "Content-type" header set to "application/json".
