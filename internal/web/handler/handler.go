@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/LCaparelli/banking-system/internal/web/request"
+	"io/ioutil"
 	"log"
 	"net/http"
 )
@@ -33,4 +34,12 @@ func initReq(req request.Request, body []byte) (error, int, []byte) {
 		return err, http.StatusBadRequest, []byte(err.Error())
 	}
 	return nil, 0, nil
+}
+
+func reqBody(r *http.Request) ([]byte, error) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, fmt.Errorf("readAll: %v", err)
+	}
+	return body, nil
 }
