@@ -1,4 +1,4 @@
-package pkg
+package account
 
 import (
 	"fmt"

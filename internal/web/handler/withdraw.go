@@ -62,6 +62,7 @@ func withdrawPOST(w http.ResponseWriter, body []byte) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	_, err = w.Write([]byte(respBody))
 	if err != nil {
 		log.Printf("withdrawPOST: Write: %v", err)
