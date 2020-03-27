@@ -13,13 +13,35 @@ var (
 	accountService = service.AccountServiceFactory()
 )
 
-func AccountGET(w http.ResponseWriter, body []byte) {
+func AccountHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := reqBody(r)
+	if err != nil {
+		log.Printf("reqBody: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	httpMethod := r.Method
+	switch httpMethod {
+	case "GET":
+		accountGET(w, body)
+	case "DELETE":
+		accountDELETE(w, body)
+	case "POST":
+		accountPOST(w, body)
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		// TODO: decide whether should this should be logged and how.
+	}
+}
+
+func accountGET(w http.ResponseWriter, body []byte) {
 	var req request.AccountGET
 	err, status, respBody := initReq(&req, body)
 	if err != nil {
 		w.WriteHeader(status)
 		if _, err = w.Write(respBody); err != nil {
-			log.Printf("AccountGET: Write: %v", err)
+			log.Printf("accountGET: Write: %v", err)
 		}
 		return
 	}
@@ -28,30 +50,30 @@ func AccountGET(w http.ResponseWriter, body []byte) {
 	if err != nil {
 		// TODO: decide whether this should be 404. If we were getting the ID via URL instead of request body, it would.
 		w.WriteHeader(http.StatusNotFound)
-		log.Printf("AccountGET: GetAccount: %v", err)
+		log.Printf("accountGET: GetAccount: %v", err)
 		return
 	}
 
 	respBody, err = json.Marshal(account)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		log.Printf("AccountGET: Marshal: %v", err)
+		log.Printf("accountGET: Marshal: %v", err)
 		return
 	}
 
 	_, err = w.Write([]byte(respBody))
 	if err != nil {
-		log.Printf("AccountGET: Write: %v", err)
+		log.Printf("accountGET: Write: %v", err)
 	}
 }
 
-func AccountDELETE(w http.ResponseWriter, body []byte) {
+func accountDELETE(w http.ResponseWriter, body []byte) {
 	var req request.AccountDELETE
 	err, status, respBody := initReq(&req, body)
 	if err != nil {
 		w.WriteHeader(status)
 		if _, err = w.Write(respBody); err != nil {
-			log.Printf("AccountDELETE: Write: %v", err)
+			log.Printf("accountDELETE: Write: %v", err)
 		}
 		return
 	}
@@ -59,19 +81,19 @@ func AccountDELETE(w http.ResponseWriter, body []byte) {
 	err = accountService.DeleteAccount(req.Id)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
-		log.Printf("AccountDELETE: DeleteAccount: %v", err)
+		log.Printf("accountDELETE: DeleteAccount: %v", err)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
 }
 
-func AccountPOST(w http.ResponseWriter, body []byte) {
+func accountPOST(w http.ResponseWriter, body []byte) {
 	var req request.AccountPOST
 	err, status, respBody := initReq(&req, body)
 	if err != nil {
 		w.WriteHeader(status)
 		if _, err = w.Write(respBody); err != nil {
-			log.Printf("AccountDELETE: Write: %v", err)
+			log.Printf("accountDELETE: Write: %v", err)
 		}
 		return
 	}
@@ -79,18 +101,18 @@ func AccountPOST(w http.ResponseWriter, body []byte) {
 	id, err := accountService.CreateAccount(req.Name, req.Address, req.Balance)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		log.Printf("AccountDELETE: CreateAccount: %v", err)
+		log.Printf("accountDELETE: CreateAccount: %v", err)
 		return
 	}
 
 	respBody, err = json.Marshal(response.AccountGET{Id: id})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		log.Printf("AccountDELETE: Marshal: %v", err)
+		log.Printf("accountDELETE: Marshal: %v", err)
 		return
 	}
 	_, err = w.Write([]byte(respBody))
 	if err != nil {
-		log.Printf("AccountDELETE: Write: %v", err)
+		log.Printf("accountDELETE: Write: %v", err)
 	}
 }
