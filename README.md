@@ -87,7 +87,16 @@ For example:
 ```
 The "name" and "address" fields must not be empty. The "balance" field must not be negative.
 
-This always return OK (200) with an empty body.
+This always return OK (200) with the account information as return. For example:
+
+```json
+{
+    "Name": "Lucas Caparelli",
+    "Address": "test, 321",
+    "Balance": 0,
+    "Id": 1
+}
+```
 
 ### /deposit
 To make a deposit issue an HTTP POST. The  body itself is a JSON with an integer ("id") and a decimal ("amount").
@@ -102,7 +111,17 @@ For example:
 ```
 The "id" field must not be negative. The "balance" field must be positive.
 
-If the account with the informed id exists the response status will be OK (200) and the body will be empty.
+If the account with the informed id exists the response status will be OK (200) and the body will contain information regarding the operation's success. The body contains a boolean indicating whether the operation was successful or not ("ok"), a string describing the result ("msg") and a decimal with the current balance ("NewBalance").
+
+In the current business model this operation is always successful. An example response body:
+
+```json
+{
+    "Ok": true,
+    "Msg": "Deposit successful",
+    "NewBalance": 100
+}
+```
 
 If the account does not exist the server responds with NotFound status (404) and the response body is empty.
 
@@ -120,14 +139,15 @@ For example:
 
 The "id" field must not be negative. The "balance" field must be positive.
 
-If the account with the informed id exists the response status will be OK (200) and the body will contain information regarding the operation's success. The body contains a boolean indicating whether the operation was successful or not ("ok") and a string describing the result ("msg").
+If the account with the informed id exists the response status will be OK (200) and the body will contain information regarding the operation's success. The body contains a boolean indicating whether the operation was successful or not ("ok"), a string describing the result ("msg") and a decimal with the current balance ("NewBalance").
 
 For example, if there is enough balance to complete the withdraw:
 
 ```json
 {
     "Ok": true,
-    "Msg": "Successfully withdrew 100.50"
+    "Msg": "Successfully withdrew 100.50",
+    "NewBalance": 0
 }
 ```
 
@@ -136,7 +156,8 @@ If there isn't enough balance:
 ```json
 {
     "Ok": false,
-    "Msg": "Not enough balance to withdraw 100.50"
+    "Msg": "Not enough balance to withdraw 100.50",
+    "NewBalance": 0
 }
 ```
 If the account does not exist the server responds with NotFound status (404) and the response body is empty.
@@ -162,17 +183,17 @@ The following functions are part of the API:
 
   The "id" argument must not be negative.
 
-- `CreateAccount(name, address string, balance float64) (int, error)`
+- `CreateAccount(name, address string, balance float64) (*domain.Account, error)`
 
  The "name" and "address" arguments must not be empty. The "balance" argument must not be negative.
 
-- `Deposit(id int, amount float64) error`
+- `Deposit(id int, amount float64) (float64, error)`
 
-  The "id" argument must not be negative. The "balance" argument must be positive.
+  The "id" argument must not be negative. The "amount" argument must be positive.
 
-- `Withdraw(id int, amount float64) error`
+- `Withdraw(id int, amount float64) (float64, error)`
 
-  The "id" argument must not be negative. The "balance" argument must be positive.
+  The "id" argument must not be negative. The "amount" argument must be positive.
 
 ### Library import
 

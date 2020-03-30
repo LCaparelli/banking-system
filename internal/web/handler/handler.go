@@ -10,7 +10,10 @@ import (
 )
 
 const (
-	invalidJSON = "invalid JSON syntax or fields in request body"
+	invalidJSON      = "invalid JSON syntax or fields in request body"
+	notEnoughBalance = "Not enough balance to withdraw %.2f"
+	successWithdraw  = "Successfully withdrew %.2f"
+	successDeposit   = "Deposit successful"
 )
 
 func unmarshalReq(body []byte, req request.Request) error {

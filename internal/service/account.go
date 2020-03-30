@@ -31,13 +31,13 @@ func (s *AccountService) DeleteAccount(id int) error {
 	return nil
 }
 
-func (s *AccountService) CreateAccount(name, address string, balance float64) (int, error) {
+func (s *AccountService) CreateAccount(name, address string, balance float64) (*domain.Account, error) {
 	account := &domain.Account{Customer: domain.Customer{Name: name, Address: address}, Balance: balance, Id: currentId}
 	if err := s.repo.NewAccount(account); err != nil {
-		return -1, fmt.Errorf("NewAccount: %v", err)
+		return nil, fmt.Errorf("NewAccount: %v", err)
 	}
 	currentId++
-	return account.Id, nil
+	return account, nil
 }
 
 func (s *AccountService) setBalance(account *domain.Account, balance float64) error {
@@ -48,30 +48,32 @@ func (s *AccountService) setBalance(account *domain.Account, balance float64) er
 	return nil
 }
 
-func (s *AccountService) Withdraw(id int, amount float64) error {
+func (s *AccountService) Withdraw(id int, amount float64) (float64, error) {
 	account, err := s.repo.AccountById(id)
 	if err != nil {
-		return fmt.Errorf("AccountById: %v", err)
+		return -1, fmt.Errorf("AccountById: %v", err)
 	}
 	newBalance := account.Balance - amount
 	if newBalance < 0.0 {
-		return fmt.Errorf("insuffient funds to withdraw %.2f", amount)
+		return account.Balance, fmt.Errorf("insuffient funds to withdraw %.2f", amount)
 	}
 	err = s.setBalance(account, newBalance)
 	if err != nil {
-		return fmt.Errorf("setBalance: %v", err)
+		return account.Balance, fmt.Errorf("setBalance: %v", err)
 	}
-	return nil
+	return newBalance, nil
 }
 
-func (s *AccountService) Deposit(id int, amount float64) error {
+func (s *AccountService) Deposit(id int, amount float64) (float64, error) {
 	account, err := s.repo.AccountById(id)
 	if err != nil {
-		return fmt.Errorf("AccountById: %v", err)
+		return -1, fmt.Errorf("AccountById: %v", err)
 	}
-	err = s.setBalance(account, account.Balance+amount)
+
+	newBalance := account.Balance + amount
+	err = s.setBalance(account, newBalance)
 	if err != nil {
-		return fmt.Errorf("setBalance: %v", err)
+		return account.Balance, fmt.Errorf("setBalance: %v", err)
 	}
-	return nil
+	return newBalance, nil
 }

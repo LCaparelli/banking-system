@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/LCaparelli/banking-system/internal/service"
 	"github.com/LCaparelli/banking-system/internal/web/request"
-	"github.com/LCaparelli/banking-system/internal/web/response"
 	"log"
 	"net/http"
 )
@@ -60,6 +59,12 @@ func accountGET(w http.ResponseWriter, body []byte) {
 		log.Printf("accountGET: Marshal: %v", err)
 		return
 	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_, err = w.Write([]byte(respBody))
+	if err != nil {
+		log.Printf("withdrawPOST: Write: %v", err)
+	}
 }
 
 func accountDELETE(w http.ResponseWriter, body []byte) {
@@ -93,14 +98,14 @@ func accountPOST(w http.ResponseWriter, body []byte) {
 		return
 	}
 
-	id, err := accountService.CreateAccount(req.Name, req.Address, req.Balance)
+	account, err := accountService.CreateAccount(req.Name, req.Address, req.Balance)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Printf("accountDELETE: CreateAccount: %v", err)
 		return
 	}
 
-	respBody, err = json.Marshal(response.AccountGET{Id: id})
+	respBody, err = json.Marshal(account)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Printf("accountDELETE: Marshal: %v", err)
