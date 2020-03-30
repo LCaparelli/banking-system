@@ -9,11 +9,6 @@ import (
 	"net/http"
 )
 
-const (
-	notEnoughBalance = "Not enough balance to withdraw %.2f"
-	success          = "Successfully withdrew %.2f"
-)
-
 func WithdrawHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := reqBody(r)
 	if err != nil {
@@ -49,13 +44,14 @@ func withdrawPOST(w http.ResponseWriter, body []byte) {
 		return
 	}
 
-	ok, msg := true, fmt.Sprintf(success, req.Amount)
-	if err = accountService.Withdraw(req.Id, req.Amount); err != nil {
+	ok, msg := true, fmt.Sprintf(successWithdraw, req.Amount)
+	newBalance, err := accountService.Withdraw(req.Id, req.Amount)
+	if err != nil {
 		ok = false
 		msg = fmt.Sprintf(notEnoughBalance, req.Amount)
 	}
 
-	respBody, err = json.Marshal(response.WithdrawPOST{Ok: ok, Msg: msg})
+	respBody, err = json.Marshal(response.TransactionPOST{Ok: ok, Msg: msg, NewBalance: newBalance})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Printf("withdrawPOST: Marshal: %v", err)

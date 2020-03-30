@@ -50,33 +50,35 @@ func DeleteAccount(id int) error {
 	return nil
 }
 
-func CreateAccount(name, address string, balance float64) (int, error) {
+func CreateAccount(name, address string, balance float64) (*domain.Account, error) {
 	if err := validateCreate(name, address, balance); err != nil {
-		return -1, fmt.Errorf("validatecreate: %v", err)
+		return nil, fmt.Errorf("validatecreate: %v", err)
 	}
-	id, err := accountService.CreateAccount(name, address, balance)
+	account, err := accountService.CreateAccount(name, address, balance)
 	if err != nil {
-		return -1, fmt.Errorf("service.createaccount: %v", err)
+		return nil, fmt.Errorf("service.createaccount: %v", err)
 	}
-	return id, nil
+	return account, nil
 }
 
-func Deposit(id int, amount float64) error {
+func Deposit(id int, amount float64) (float64, error) {
 	if err := validateDeposit(id, amount); err != nil {
-		return fmt.Errorf("validatedeposit: %v", err)
+		return -1, fmt.Errorf("validatedeposit: %v", err)
 	}
-	if err := accountService.Deposit(id, amount); err != nil {
-		return fmt.Errorf("service.deposit: %v", err)
+	newBalance, err := accountService.Deposit(id, amount)
+	if err != nil {
+		return newBalance, fmt.Errorf("service.deposit: %v", err)
 	}
-	return nil
+	return newBalance, nil
 }
 
-func Withdraw(id int, amount float64) error {
+func Withdraw(id int, amount float64) (float64, error) {
 	if err := validateWithdraw(id, amount); err != nil {
-		return fmt.Errorf("validatewithdraw: %v", err)
+		return -1, fmt.Errorf("validatewithdraw: %v", err)
 	}
-	if err := accountService.Withdraw(id, amount); err != nil {
-		return fmt.Errorf("service.withdraw: %v", err)
+	newBalance, err := accountService.Withdraw(id, amount)
+	if err != nil {
+		return newBalance, fmt.Errorf("service.withdraw: %v", err)
 	}
-	return nil
+	return newBalance, nil
 }

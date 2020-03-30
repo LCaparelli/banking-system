@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"encoding/json"
 	"github.com/LCaparelli/banking-system/internal/web/request"
+	"github.com/LCaparelli/banking-system/internal/web/response"
 	"log"
 	"net/http"
 )
@@ -41,9 +43,23 @@ func depositPOST(w http.ResponseWriter, body []byte) {
 		return
 	}
 
-	if err = accountService.Deposit(req.Id, req.Amount); err != nil {
-		log.Printf("depositPOST: Deposit: %v", err)
+	newBalance, err := accountService.Deposit(req.Id, req.Amount)
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		log.Printf("withdrawPOST: Marshal: %v", err)
 		return
+	}
+
+	respBody, err = json.Marshal(response.TransactionPOST{Ok: true, Msg: successDeposit, NewBalance: newBalance})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Printf("withdrawPOST: Marshal: %v", err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_, err = w.Write([]byte(respBody))
+	if err != nil {
+		log.Printf("withdrawPOST: Write: %v", err)
 	}
 }
